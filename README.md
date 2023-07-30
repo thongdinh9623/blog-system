@@ -1,5 +1,5 @@
 # Features
-- Register, Signin, Signout
+- Register, Sign in, Sign out
 - Show blogs list with paging
 - Create blog: add photo to blog
 - View blog detail
@@ -18,10 +18,9 @@
   + Install node packages with command: npm install
   + Run project with command: ng serve
 
-How to deploy this project to a host?
+How to deploy this project to Heroku?
 - Point api urls to prod path
 - Modify output path point to wwwfolder of Web API project
 - Config middleware using UseDefaultFiles() and UseStaticFiles() methods in Startup.cs
 - Run command: ng build
 - Add fallback controller
-- 
