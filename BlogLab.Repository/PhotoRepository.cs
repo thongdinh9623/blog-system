@@ -1,12 +1,10 @@
 ﻿using BlogLab.Models.Photo;
 using Dapper;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BlogLab.Repository
@@ -65,7 +63,7 @@ namespace BlogLab.Repository
 
                 photo = await connection.QueryFirstOrDefaultAsync<Photo>(
                     "Photo_Get",
-                    new { PhotoId = photoId},
+                    new { PhotoId = photoId },
                     commandType: CommandType.StoredProcedure);
             }
 
@@ -89,7 +87,8 @@ namespace BlogLab.Repository
 
                 newPhotoId = await connection.ExecuteScalarAsync<int>(
                     "Photo_Insert",
-                    new { 
+                    new
+                    {
                         Photo = dataTable.AsTableValuedParameter("dbo.PhotoType"),
                         ApplicationUserId = applicationUserId
                     },

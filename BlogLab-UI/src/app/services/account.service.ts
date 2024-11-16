@@ -2,42 +2,41 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from '../../environments/environment.prod';
 import { ApplicationUserCreate } from '../models/account/application-user-create.model';
 import { ApplicationUserLogin } from '../models/account/application-user-login.model';
 import { ApplicationUser } from '../models/account/application-user.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AccountService {
+  private currentUserSubject$: BehaviorSubject<ApplicationUser>;
 
-  private currentUserSubject$: BehaviorSubject<ApplicationUser>
-
-  constructor(
-    private http: HttpClient
-  ) { 
-    this.currentUserSubject$ = new BehaviorSubject<ApplicationUser>(JSON.parse(localStorage.getItem('blogLab-currentUser')));
+  constructor(private http: HttpClient) {
+    this.currentUserSubject$ = new BehaviorSubject<ApplicationUser>(
+      JSON.parse(localStorage.getItem('blogLab-currentUser') || '{}')
+    );
   }
 
-  login(model: ApplicationUserLogin) : Observable<ApplicationUser>  {
-    return this.http.post(`${environment.webApi}/Account/login`, model).pipe(
-      map((user : ApplicationUser) => {
+  login(model: ApplicationUserLogin): Observable<ApplicationUser> {
+    return this.http
+      .post<ApplicationUser>(`${environment.webApi}/Account/login`, model)
+      .pipe(
+        map((user: ApplicationUser) => {
+          if (user) {
+            localStorage.setItem('blogLab-currentUser', JSON.stringify(user));
+            this.setCurrentUser(user);
+          }
 
-        if (user) {
-          localStorage.setItem('blogLab-currentUser', JSON.stringify(user));
-          this.setCurrentUser(user);
-        }
-
-        return user;
-      })
-    )
+          return user;
+        })
+      );
   }
 
-  register(model: ApplicationUserCreate) : Observable<ApplicationUser> {
+  register(model: ApplicationUserCreate): Observable<ApplicationUser> {
     return this.http.post(`${environment.webApi}/Account/register`, model).pipe(
-      map((user : ApplicationUser) => {
-
+      map((user: any): ApplicationUser => {
         if (user) {
           localStorage.setItem('blogLab-currentUser', JSON.stringify(user));
           this.setCurrentUser(user);
@@ -45,7 +44,7 @@ export class AccountService {
 
         return user;
       })
-    )
+    );
   }
 
   setCurrentUser(user: ApplicationUser) {
@@ -68,6 +67,12 @@ export class AccountService {
 
   logout() {
     localStorage.removeItem('blogLab-currentUser');
-    this.currentUserSubject$.next(null);
+    this.currentUserSubject$.next({
+      applicationUserId: 0,
+      username: '',
+      fullname: '',
+      email: '',
+      token: '',
+    });
   }
 }

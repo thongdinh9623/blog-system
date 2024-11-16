@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BlogLab.Models.Settings
+﻿namespace BlogLab.Models.Settings
 {
     public class CloudinaryOptions
     {

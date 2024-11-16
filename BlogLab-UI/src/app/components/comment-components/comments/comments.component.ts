@@ -1,27 +1,25 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ToastrService } from 'ngx-toastr';
-import { BlogCommentViewModel } from 'src/app/models/blog-comment/blog-comment-view-model.model';
-import { BlogComment } from 'src/app/models/blog-comment/blog-comment.model';
-import { AccountService } from 'src/app/services/account.service';
-import { BlogCommentService } from 'src/app/services/blog-comment.service';
+import { BlogCommentViewModel } from '../../../models/blog-comment/blog-comment-view-model.model';
+import { BlogComment } from '../../../models/blog-comment/blog-comment.model';
+import { AccountService } from '../../../services/account.service';
+import { BlogCommentService } from '../../../services/blog-comment.service';
 
 @Component({
   selector: 'app-comments',
   templateUrl: './comments.component.html',
-  styleUrls: ['./comments.component.css']
+  styleUrls: ['./comments.component.css'],
 })
 export class CommentsComponent implements OnInit {
-
-  @Input() comments: BlogCommentViewModel[];
+  @Input() comments: BlogCommentViewModel[] = [];
 
   constructor(
     public accountService: AccountService,
     private toastr: ToastrService,
     private blogCommentService: BlogCommentService
-  ) { }
+  ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   editComment(comment: BlogCommentViewModel) {
     comment.isEditable = true;
@@ -35,12 +33,14 @@ export class CommentsComponent implements OnInit {
     comment.deleteConfirm = false;
   }
 
-  deleteConfirm(comment: BlogCommentViewModel, comments: BlogCommentViewModel[]) {
+  deleteConfirm(
+    comment: BlogCommentViewModel,
+    comments: BlogCommentViewModel[]
+  ) {
     this.blogCommentService.delete(comment.blogCommentId).subscribe(() => {
-
       let index = 0;
 
-      for(let i=0; i<comments.length; i++) {
+      for (let i = 0; i < comments.length; i++) {
         if (comments[i].blogCommentId === comment.blogCommentId) {
           index = i;
         }
@@ -50,7 +50,7 @@ export class CommentsComponent implements OnInit {
         comments.splice(index, 1);
       }
 
-      this.toastr.info("Blog comment deleted.");
+      this.toastr.info('Blog comment deleted.');
     });
   }
 
@@ -66,7 +66,7 @@ export class CommentsComponent implements OnInit {
       isEditable: false,
       deleteConfirm: false,
       isReplying: true,
-      comments: []
+      comments: [],
     };
 
     comment.comments.push(replyComment);
@@ -74,7 +74,7 @@ export class CommentsComponent implements OnInit {
 
   onCommentSaved(blogComment: BlogComment, comment: BlogCommentViewModel) {
     comment.blogCommentId = blogComment.blogCommentId;
-    comment.parentBlogCommentId = blogComment.parentBlogCommentId;
+    comment.parentBlogCommentId = blogComment.parentBlogCommentId ?? 0;
     comment.blogId = blogComment.blogId;
     comment.content = blogComment.content;
     comment.publishDate = blogComment.publishDate;

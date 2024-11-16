@@ -1,4 +1,7 @@
-# Features
+# Blog system built with SQL Server, ASP.NET Core web api, Angular
+
+## Features
+
 - Register, Sign in, Sign out
 - Show blogs list with paging
 - Create blog: add photo to blog
@@ -6,19 +9,31 @@
 - Edit blog
 - Comment on blog: edit, reply, edit comment
 
-# How to run this project locally?
-1. Initial database
+## Tech stack
+
+- Database: SQL Server
+- Back-end: ASP.NET Core web api
+- Front-end: Angular
+- Nuget packages: Newtonsoft.Json, Microsoft.Extensions.Identity.Core, Dapper, System.Data.SqlClient
+
+## Run local
+
+### Initial database
+
 - Install SQL Server
 - Run script in file Deployment.sql
-2. Run back-end project
-- Run command
-  + Point to Blog.Web project
-  + Run command: dotnet watch run
-3. Run front-end project
-  + Install node packages with command: npm install
-  + Run project with command: ng serve
 
-How to deploy this project to Heroku?
+### Run back-end project
+
+- dotnet run
+
+### Run front-end project
+
+- Install node packages with command: npm install
+- Run project with command: ng serve
+
+## Hosting
+
 - Point api urls to prod path
 - Modify output path point to wwwfolder of Web API project
 - Config middleware using UseDefaultFiles() and UseStaticFiles() methods in Startup.cs

@@ -1,7 +1,5 @@
 ﻿using BlogLab.Models.BlogComment;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BlogLab.Repository

@@ -3,7 +3,7 @@ import {
   HttpRequest,
   HttpHandler,
   HttpEvent,
-  HttpInterceptor
+  HttpInterceptor,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
@@ -13,30 +13,32 @@ import { Router } from '@angular/router';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-
   constructor(
     private toastr: ToastrService,
     private router: Router,
     private accountService: AccountService
   ) {}
 
-  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+  intercept(
+    request: HttpRequest<unknown>,
+    next: HttpHandler
+  ): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
-      catchError(error => {
+      catchError((error) => {
         if (error) {
-          switch(error.status) {
+          switch (error.status) {
             case 400:
               this.handle400Error(error);
-            break;
+              break;
             case 401:
               this.handle401Error(error);
-            break;
+              break;
             case 500:
               this.handle500Error(error);
-            break;
+              break;
             default:
               this.handleUnexpectedError(error);
-              break; 
+              break;
           }
         }
 
@@ -51,24 +53,28 @@ export class ErrorInterceptor implements HttpInterceptor {
       for (const key in error.error) {
         if (!!error.error[key]) {
           const errorElement = error.error[key];
-          errorMessage = (`${errorMessage}${errorElement.code} - ${errorElement.description}\n`);
+          errorMessage = `${errorMessage}${errorElement.code} - ${errorElement.description}\n`;
         }
       }
       this.toastr.error(errorMessage, error.statusText);
       console.log(error.error);
-    } else if (!!error?.error?.errors?.Content && (typeof error.error.errors.Content) === 'object') {
+    } else if (
+      !!error?.error?.errors?.Content &&
+      typeof error.error.errors.Content === 'object'
+    ) {
       let errorObject = error.error.errors.Content;
       let errorMessage = '';
       for (const key in errorObject) {
         const errorElement = errorObject[key];
-        errorMessage = (`${errorMessage}${errorElement}\n`);
+        errorMessage = `${errorMessage}${errorElement}\n`;
       }
       this.toastr.error(errorMessage, error.statusCode);
       console.log(error.error);
     } else if (!!error.error) {
-      let errorMessage = ((typeof error.error) === 'string')
-        ? error.error
-        : 'There was a validation error.';
+      let errorMessage =
+        typeof error.error === 'string'
+          ? error.error
+          : 'There was a validation error.';
       this.toastr.error(errorMessage, error.statusCode);
       console.log(error.error);
     } else {
@@ -85,7 +91,9 @@ export class ErrorInterceptor implements HttpInterceptor {
   }
 
   handle500Error(error: any) {
-    this.toastr.error('Please contact the administrator. An error happened in the server.');
+    this.toastr.error(
+      'Please contact the administrator. An error happened in the server.'
+    );
     console.log(error);
   }
 

@@ -11,19 +11,31 @@ import { PhotoAlbumComponent } from './components/photo-album/photo-album.compon
 import { AuthGuard } from './guards/auth.guard';
 
 const routes: Routes = [
-  {path: '', component: HomeComponent},
-  {path: 'login', component: LoginComponent},
-  {path: 'blogs', component: BlogsComponent},
-  {path: 'blogs/:id', component: BlogComponent},
-  {path: 'photo-album', component: PhotoAlbumComponent, canActivate: [AuthGuard]},
-  {path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard]},
-  {path: 'dashboard/:id', component: BlogEditComponent, canActivate: [AuthGuard]},
-  {path: 'not-found', component: NotFoundComponent},
-  {path: '**', redirectTo: '/not-found'}
+  { path: '', component: HomeComponent },
+  { path: 'login', component: LoginComponent },
+  { path: 'blogs', component: BlogsComponent },
+  { path: 'blogs/:id', component: BlogComponent },
+  {
+    path: 'photo-album',
+    component: PhotoAlbumComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'dashboard/:id',
+    component: BlogEditComponent,
+    canActivate: [AuthGuard],
+  },
+  { path: 'not-found', component: NotFoundComponent },
+  { path: '**', redirectTo: '/not-found' },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
-  exports: [RouterModule]
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

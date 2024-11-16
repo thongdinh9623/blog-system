@@ -1,12 +1,10 @@
 ﻿using BlogLab.Models.Blog;
 using Dapper;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BlogLab.Repository
@@ -46,10 +44,11 @@ namespace BlogLab.Repository
                 await connection.OpenAsync();
 
                 using (var multi = await connection.QueryMultipleAsync("Blog_GetAll",
-                    new { 
+                    new
+                    {
                         Offset = (blogPaging.Page - 1) * blogPaging.PageSize,
                         PageSize = blogPaging.PageSize
-                    }, 
+                    },
                     commandType: CommandType.StoredProcedure))
                 {
                     results.Items = multi.Read<Blog>();
