@@ -3,7 +3,7 @@
 ## Features
 
 - Register, Sign in, Sign out
-- Show blogs list with paging
+- Show blogs list with pagination
 - Create blog: add photo to blog
 - View blog detail
 - Edit blog
@@ -33,9 +33,3 @@
 - Run project with command: ng serve
 
 ## Hosting
-
-- Point api urls to prod path
-- Modify output path point to wwwfolder of Web API project
-- Config middleware using UseDefaultFiles() and UseStaticFiles() methods in Startup.cs
-- Run command: ng build
-- Add fallback controller

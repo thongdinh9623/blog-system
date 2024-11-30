@@ -4,6 +4,7 @@
 <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
   <div class="form-group mb-3">
     <input
+      autofocus
       type="text"
       [ngClass]="{
         'is-invalid': hasErrors('fullname') && isTouched('fullname'),

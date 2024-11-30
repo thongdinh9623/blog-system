@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { environment } from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
 import { ApplicationUserCreate } from '../models/account/application-user-create.model';
 import { ApplicationUserLogin } from '../models/account/application-user-login.model';
 import { ApplicationUser } from '../models/account/application-user.model';
