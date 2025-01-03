@@ -20,7 +20,6 @@ namespace BlogLab.Web.Extensions
                     if (contextFeature != null)
                     {
                         // In production version you would log exceptions into your database
-
                         await context.Response.WriteAsync(new ApiException()
                         {
                             StatusCode = context.Response.StatusCode,
