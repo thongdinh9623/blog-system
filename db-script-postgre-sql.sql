@@ -1,11 +1,10 @@
-CREATE DATABASE BlogDB
+CREATE DATABASE BlogDB;
 
+USE BlogDB;
 
-USE BlogDB
+CREATE SCHEMA aggregate;
 
-
-CREATE SCHEMA aggregate
-
+/* Types */
 
 CREATE TYPE AccountType AS TABLE
 (
@@ -15,8 +14,7 @@ CREATE TYPE AccountType AS TABLE
     NormalizedEmail VARCHAR(30) NOT NULL,
     Fullname VARCHAR(30) NULL,
     PasswordHash TEXT(max) NOT NULL
-)
-
+);
 
 CREATE TYPE BlogCommentType AS TABLE
 (
@@ -24,8 +22,7 @@ CREATE TYPE BlogCommentType AS TABLE
     ParentBlogCommentId INTEGER NULL,
     BlogId INTEGER NOT NULL,
     Content VARCHAR(300) NOT NULL
-)
-
+);
 
 CREATE TYPE BlogType AS TABLE
 (
@@ -33,16 +30,16 @@ CREATE TYPE BlogType AS TABLE
     Title VARCHAR(50) NOT NULL,
     Content VARCHAR(max) NOT NULL,
     PhotoId INTEGER NULL
-)
-
+);
 
 CREATE TYPE PhotoType AS TABLE
 (
     PublicId VARCHAR(50) NOT NULL,
     ImageUrl VARCHAR(250) NOT NULL,
     Description VARCHAR(30) NOT NULL
-)
+);
 
+/* Tables */
 
 CREATE TABLE ApplicationUser
 (
@@ -54,15 +51,13 @@ CREATE TABLE ApplicationUser
     Fullname VARCHAR(30) NULL,
     PasswordHash NVARCHAR(MAX) NOT NULL,
     PRIMARY KEY (ApplicationUserId)
-)
+);
 
 CREATE INDEX IX_ApplicationUser_NormalizedUsername
-ON ApplicationUser (NormalizedUsername)
-
+ON ApplicationUser (NormalizedUsername);
 
 CREATE INDEX IX_ApplicationUser_NormalizedEmail
-ON ApplicationUser (NormalizedEmail)
-
+ON ApplicationUser (NormalizedEmail);
 
 CREATE TABLE Blog
 (
@@ -80,8 +75,7 @@ CREATE TABLE Blog
         PRIMARY KEY (BlogId),
     FOREIGN KEY (ApplicationUserId) REFERENCES ApplicationUser (ApplicationUserId),
     FOREIGN KEY (PhotoId) REFERENCES Photo (PhotoId)
-)
-
+);
 
 CREATE TABLE Photo
 (
@@ -96,8 +90,7 @@ CREATE TABLE Photo
         DEFAULT GETDATE(),
     PRIMARY KEY (PhotoId),
     FOREIGN KEY (ApplicationUserId) REFERENCES ApplicationUser (ApplicationUserId)
-)
-
+);
 
 CREATE TABLE BlogComment
 (
@@ -115,8 +108,9 @@ CREATE TABLE BlogComment
     PRIMARY KEY (BlogCommentId),
     FOREIGN KEY (BlogId) REFERENCES Blog (BlogId),
     FOREIGN KEY (ApplicationUserId) REFERENCES ApplicationUser (ApplicationUserId)
-)
+);
 
+/* Views */
 
 CREATE VIEW aggregate.Blog
 AS
@@ -131,8 +125,7 @@ SELECT t1.BlogId,
        t1.ActiveInd
 FROM dbo.Blog t1
     INNER JOIN dbo.ApplicationUser t2
-        ON t1.ApplicationUserId = t2.ApplicationUserId
-
+        ON t1.ApplicationUserId = t2.ApplicationUserId;
 
 CREATE VIEW aggregate.BlogComment
 AS
@@ -147,8 +140,7 @@ SELECT t1.BlogCommentId,
        t1.ActiveInd
 FROM dbo.BlogComment t1
     INNER JOIN dbo.ApplicationUser t2
-        ON t1.ApplicationUserId = t2.ApplicationUserId
-
+        ON t1.ApplicationUserId = t2.ApplicationUserId;
 
 CREATE PROCEDURE Account_GetByUsername @NormalizedUsername VARCHAR(20)
 AS
@@ -160,9 +152,9 @@ SELECT ApplicationUserId,
        Fullname,
        PasswordHash
 FROM ApplicationUser t1
-WHERE t1.NormalizedUsername = @NormalizedUsername
+WHERE t1.NormalizedUsername = @NormalizedUsername;
 
-
+/* Procedures */
 
 CREATE PROCEDURE Account_Insert @Account AccountType READONLY
 AS
@@ -185,7 +177,6 @@ FROM @Account;
 
 SELECT CAST(SCOPE_IDENTITY() AS INT);
 
-
 CREATE PROCEDURE Blog_Delete @BlogId INT
 AS
 UPDATE BlogComment
@@ -197,8 +188,7 @@ UPDATE Blog
 SET PhotoId = NULL,
     ActiveInd = CONVERT(BIT, 0),
     UpdateDate = GETDATE()
-WHERE BlogId = @BlogId
-
+WHERE BlogId = @BlogId;
 
 CREATE PROCEDURE Blog_Get @BlogId INT
 AS
@@ -212,8 +202,7 @@ SELECT BlogId,
        UpdateDate
 FROM aggregate.Blog t1
 WHERE t1.BlogId = @BlogId
-      AND t1.ActiveInd = CONVERT(BIT, 1)
-
+      AND t1.ActiveInd = CONVERT(BIT, 1);
 
 CREATE PROCEDURE Blog_GetAll
     @Offset INT,
@@ -234,7 +223,6 @@ ORDER BY t1.BlogId OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;
 SELECT COUNT(*)
 FROM aggregate.Blog t1
 WHERE t1.ActiveInd = CONVERT(BIT, 1);
-
 
 CREATE PROCEDURE Blog_GetAllFamous
 AS
@@ -260,8 +248,7 @@ GROUP BY t1.BlogId,
          t1.Content,
          t1.PublishDate,
          t1.UpdateDate
-ORDER BY COUNT(t2.BlogCommentId) DESC
-
+ORDER BY COUNT(t2.BlogCommentId) DESC;
 
 CREATE PROCEDURE Blog_GetByUserId @ApplicationUserId INT
 AS
@@ -275,8 +262,7 @@ SELECT BlogId,
        UpdateDate
 FROM aggregate.Blog t1
 WHERE t1.ApplicationUserId = @ApplicationUserId
-      AND t1.ActiveInd = CONVERT(BIT, 1)
-
+      AND t1.ActiveInd = CONVERT(BIT, 1);
 
 CREATE PROCEDURE Blog_Upsert
     @Blog BlogType READONLY,
@@ -314,11 +300,9 @@ WHEN NOT MATCHED BY TARGET THEN
 
 SELECT CAST(SCOPE_IDENTITY() AS INT);
 
-
 CREATE PROCEDURE BlogComment_Delete @BlogCommentId INT
 AS
 DROP TABLE IF EXISTS #BlogCommentsToBeDeleted;
-
 WITH cte_blogComments
 AS (SELECT t1.BlogCommentId,
            t1.ParentBlogCommentId
@@ -343,7 +327,6 @@ FROM BlogComment t1
     INNER JOIN #BlogCommentsToBeDeleted t2
         ON t1.BlogCommentId = t2.BlogCommentId;
 
-
 CREATE PROCEDURE BlogComment_Get @BlogCommentId INT
 AS
 SELECT t1.BlogCommentId,
@@ -358,7 +341,6 @@ FROM aggregate.BlogComment t1
 WHERE t1.BlogCommentId = @BlogCommentId
       AND t1.ActiveInd = CONVERT(BIT, 1)
 
-
 CREATE PROCEDURE BlogComment_GetAll @BlogId INT
 AS
 SELECT t1.BlogCommentId,
@@ -372,10 +354,7 @@ SELECT t1.BlogCommentId,
 FROM aggregate.BlogComment t1
 WHERE t1.BlogId = @BlogId
       AND t1.ActiveInd = CONVERT(BIT, 1)
-ORDER BY t1.UpdateDate DESC
-
-
-
+ORDER BY t1.UpdateDate DESC;
 
 CREATE PROCEDURE BlogComment_Upsert
     @BlogComment BlogCommentType READONLY,
@@ -411,12 +390,10 @@ WHEN NOT MATCHED BY TARGET THEN
 
 SELECT CAST(SCOPE_IDENTITY() AS INT);
 
-
 CREATE PROCEDURE Photo_Delete @PhotoId INT
 AS
 DELETE FROM Photo
-WHERE PhotoId = @PhotoId
-
+WHERE PhotoId = @PhotoId;
 
 CREATE PROCEDURE Photo_Get @PhotoId INT
 AS
@@ -428,9 +405,7 @@ SELECT t1.PhotoId,
        t1.PublishDate,
        t1.UpdateDate
 FROM Photo t1
-WHERE t1.PhotoId = @PhotoId
-
-
+WHERE t1.PhotoId = @PhotoId;
 
 CREATE PROCEDURE Photo_GetByUserId @ApplicationUserId INT
 AS
@@ -442,8 +417,7 @@ SELECT t1.PhotoId,
        t1.PublishDate,
        t1.UpdateDate
 FROM Photo t1
-WHERE t1.ApplicationUserId = @ApplicationUserId
-
+WHERE t1.ApplicationUserId = @ApplicationUserId;
 
 CREATE PROCEDURE Photo_Insert
     @Photo PhotoType READONLY,
@@ -463,4 +437,3 @@ SELECT @ApplicationUserId,
 FROM @Photo;
 
 SELECT CAST(SCOPE_IDENTITY() AS INT);
-

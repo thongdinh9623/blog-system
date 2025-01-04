@@ -7,6 +7,8 @@ GO
 CREATE SCHEMA [aggregate]
 GO
 
+/* Types */
+
 CREATE TYPE [dbo].[AccountType] AS TABLE
 (
     [Username] [varchar](20) NOT NULL,
@@ -43,6 +45,8 @@ CREATE TYPE [dbo].[PhotoType] AS TABLE
     [Description] [varchar](30) NOT NULL
 )
 GO
+
+/* Tables */
 
 CREATE TABLE ApplicationUser
 (
@@ -118,6 +122,8 @@ CREATE TABLE BlogComment
 )
 GO
 
+/* Views */
+
 CREATE VIEW [aggregate].[Blog]
 AS
 SELECT t1.BlogId,
@@ -150,6 +156,8 @@ FROM dbo.BlogComment t1
         ON t1.ApplicationUserId = t2.ApplicationUserId
 GO
 
+/* Stored Procedures */
+
 CREATE PROCEDURE [dbo].[Account_GetByUsername] @NormalizedUsername VARCHAR(20)
 AS
 SELECT [ApplicationUserId],
@@ -161,7 +169,6 @@ SELECT [ApplicationUserId],
        [PasswordHash]
 FROM [dbo].[ApplicationUser] t1
 WHERE t1.[NormalizedUsername] = @NormalizedUsername
-
 GO
 
 CREATE PROCEDURE [dbo].[Account_Insert] @Account AccountType READONLY
