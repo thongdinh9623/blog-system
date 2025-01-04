@@ -1,42 +1,36 @@
 CREATE DATABASE BlogDB;
 
-USE BlogDB;
-
-CREATE SCHEMA aggregate;
+SET search_path TO BlogDB;
 
 /* Types */
 
-CREATE TYPE AccountType AS TABLE
-(
-    Username VARCHAR(20) NOT NULL,
-    NormalizedUsername VARCHAR(20) NOT NULL,
-    Email VARCHAR(30) NOT NULL,
-    NormalizedEmail VARCHAR(30) NOT NULL,
-    Fullname VARCHAR(30) NULL,
-    PasswordHash TEXT(max) NOT NULL
+CREATE TYPE public.AccountType AS (
+    Username VARCHAR(20),
+    NormalizedUsername VARCHAR(20),
+    Email VARCHAR(30),
+    NormalizedEmail VARCHAR(30),
+    Fullname VARCHAR(30),
+    PasswordHash TEXT
 );
 
-CREATE TYPE BlogCommentType AS TABLE
-(
-    BlogCommentId INTEGER NOT NULL,
-    ParentBlogCommentId INTEGER NULL,
-    BlogId INTEGER NOT NULL,
-    Content VARCHAR(300) NOT NULL
+CREATE TYPE public.BlogCommentType AS (
+    BlogCommentId INTEGER,
+    ParentBlogCommentId INTEGER,
+    BlogId INTEGER,
+    Content VARCHAR(300)
 );
 
-CREATE TYPE BlogType AS TABLE
-(
-    BlogId INTEGER NOT NULL,
-    Title VARCHAR(50) NOT NULL,
-    Content VARCHAR(max) NOT NULL,
-    PhotoId INTEGER NULL
+CREATE TYPE public.BlogType AS (
+    BlogId INTEGER,
+    Title VARCHAR(50),
+    Content TEXT,
+    PhotoId INTEGER
 );
 
-CREATE TYPE PhotoType AS TABLE
-(
-    PublicId VARCHAR(50) NOT NULL,
-    ImageUrl VARCHAR(250) NOT NULL,
-    Description VARCHAR(30) NOT NULL
+CREATE TYPE public.PhotoType AS (
+    PublicId VARCHAR(50),
+    ImageUrl VARCHAR(250),
+    Description VARCHAR(30)
 );
 
 /* Tables */
