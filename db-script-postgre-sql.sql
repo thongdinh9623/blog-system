@@ -35,73 +35,57 @@ CREATE TYPE public.PhotoType AS (
 
 /* Tables */
 
-CREATE TABLE ApplicationUser
-(
-    ApplicationUserId INT NOT NULL SERIAL,
+CREATE TABLE public.ApplicationUser (
+    ApplicationUserId SERIAL PRIMARY KEY,
     Username VARCHAR(20) NOT NULL,
     NormalizedUsername VARCHAR(20) NOT NULL,
     Email VARCHAR(30) NOT NULL,
     NormalizedEmail VARCHAR(30) NOT NULL,
     Fullname VARCHAR(30) NULL,
-    PasswordHash NVARCHAR(MAX) NOT NULL,
-    PRIMARY KEY (ApplicationUserId)
+    PasswordHash TEXT NOT NULL
 );
 
 CREATE INDEX IX_ApplicationUser_NormalizedUsername
-ON ApplicationUser (NormalizedUsername);
+ON public.ApplicationUser (NormalizedUsername);
 
 CREATE INDEX IX_ApplicationUser_NormalizedEmail
-ON ApplicationUser (NormalizedEmail);
+ON public.ApplicationUser (NormalizedEmail);
 
-CREATE TABLE Blog
-(
-    BlogId INT NOT NULL SERIAL,
-    ApplicationUserId INT NOT NULL,
-    PhotoId INT NULL,
-    Title VARCHAR(50) NOT NULL,
-    Content VARCHAR(MAX) NOT NULL,
-    PublishDate DATETIME NOT NULL
-        DEFAULT GETDATE(),
-    UpdateDate DATETIME NOT NULL
-        DEFAULT GETDATE(),
-    ActiveInd BIT NOT NULL
-        DEFAULT CONVERT(BIT, 1)
-        PRIMARY KEY (BlogId),
-    FOREIGN KEY (ApplicationUserId) REFERENCES ApplicationUser (ApplicationUserId),
-    FOREIGN KEY (PhotoId) REFERENCES Photo (PhotoId)
-);
-
-CREATE TABLE Photo
-(
-    PhotoId INT NOT NULL SERIAL,
-    ApplicationUserId INT NOT NULL,
+CREATE TABLE public.Photo (
+    PhotoId SERIAL PRIMARY KEY,
+    ApplicationUserId INTEGER NOT NULL,
     PublicId VARCHAR(50) NOT NULL,
     ImageUrl VARCHAR(250) NOT NULL,
     Description VARCHAR(30) NOT NULL,
-    PublishDate DATETIME NOT NULL
-        DEFAULT GETDATE(),
-    UpdateDate DATETIME NOT NULL
-        DEFAULT GETDATE(),
-    PRIMARY KEY (PhotoId),
-    FOREIGN KEY (ApplicationUserId) REFERENCES ApplicationUser (ApplicationUserId)
+    PublishDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UpdateDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ApplicationUserId) REFERENCES public.ApplicationUser (ApplicationUserId)
 );
 
-CREATE TABLE BlogComment
-(
-    BlogCommentId INT NOT NULL SERIAL,
-    ParentBlogCommentId INT NULL,
-    BlogId INT NOT NULL,
-    ApplicationUserId INT NOT NULL,
+CREATE TABLE public.Blog (
+    BlogId SERIAL PRIMARY KEY,
+    ApplicationUserId INTEGER NOT NULL,
+    PhotoId INTEGER,
+    Title VARCHAR(50) NOT NULL,
+    Content TEXT NOT NULL,
+    PublishDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UpdateDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ActiveInd BOOLEAN NOT NULL DEFAULT TRUE,
+    FOREIGN KEY (ApplicationUserId) REFERENCES public.ApplicationUser (ApplicationUserId),
+    FOREIGN KEY (PhotoId) REFERENCES public.Photo (PhotoId)
+);
+
+CREATE TABLE public.BlogComment (
+    BlogCommentId SERIAL PRIMARY KEY,
+    ParentBlogCommentId INTEGER,
+    BlogId INTEGER NOT NULL,
+    ApplicationUserId INTEGER NOT NULL,
     Content VARCHAR(300) NOT NULL,
-    PublishDate DATETIME NOT NULL
-        DEFAULT GETDATE(),
-    UpdateDate DATETIME NOT NULL
-        DEFAULT GETDATE(),
-    ActiveInd BIT NOT NULL
-        DEFAULT CONVERT(BIT, 1),
-    PRIMARY KEY (BlogCommentId),
-    FOREIGN KEY (BlogId) REFERENCES Blog (BlogId),
-    FOREIGN KEY (ApplicationUserId) REFERENCES ApplicationUser (ApplicationUserId)
+    PublishDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UpdateDate TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ActiveInd BOOLEAN NOT NULL DEFAULT TRUE,
+    FOREIGN KEY (BlogId) REFERENCES public.Blog (BlogId),
+    FOREIGN KEY (ApplicationUserId) REFERENCES public.ApplicationUser (ApplicationUserId)
 );
 
 /* Views */
