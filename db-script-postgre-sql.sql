@@ -90,8 +90,7 @@ CREATE TABLE public.BlogComment (
 
 /* Views */
 
-CREATE VIEW aggregate.Blog
-AS
+CREATE VIEW Blog_View AS
 SELECT t1.BlogId,
        t1.ApplicationUserId,
        t2.Username,
@@ -101,11 +100,11 @@ SELECT t1.BlogId,
        t1.PublishDate,
        t1.UpdateDate,
        t1.ActiveInd
-FROM dbo.Blog t1
-    INNER JOIN dbo.ApplicationUser t2
+FROM public.Blog t1
+    INNER JOIN public.ApplicationUser t2
         ON t1.ApplicationUserId = t2.ApplicationUserId;
 
-CREATE VIEW aggregate.BlogComment
+CREATE VIEW BlogComment_View
 AS
 SELECT t1.BlogCommentId,
        t1.ParentBlogCommentId,
@@ -116,9 +115,11 @@ SELECT t1.BlogCommentId,
        t1.PublishDate,
        t1.UpdateDate,
        t1.ActiveInd
-FROM dbo.BlogComment t1
-    INNER JOIN dbo.ApplicationUser t2
+FROM public.BlogComment t1
+    INNER JOIN public.ApplicationUser t2
         ON t1.ApplicationUserId = t2.ApplicationUserId;
+
+/* Procedures */
 
 CREATE PROCEDURE Account_GetByUsername @NormalizedUsername VARCHAR(20)
 AS
@@ -131,8 +132,6 @@ SELECT ApplicationUserId,
        PasswordHash
 FROM ApplicationUser t1
 WHERE t1.NormalizedUsername = @NormalizedUsername;
-
-/* Procedures */
 
 CREATE PROCEDURE Account_Insert @Account AccountType READONLY
 AS
